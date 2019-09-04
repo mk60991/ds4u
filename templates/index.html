@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    
+  </head>
+  <body>
+    <h1>Automated Healthcare Chatbot</h1>
+    <div>
+      <div id="chatbox">
+        <p class="botText"><span>Hi, thank you for registering at my application,
+    my name is Mirai, I will be your personal assistant for beauty,
+    I will help you to make reservations at your favorite helathcare chatbot,
+    I will help you to get good deals and I will always find best solutions for you,
+    I will try to make your life easier and much more fun for you,
+    I will always try to learn more about you and this will help me to recommend best options for you according to your taste and preferences, also I will help you to find best and newest HEALTHCARE product in the market, I will always be on your side trying to find best things for you,
+    
+    </span></p>
+       
+        <p class="botText"><span>Hi There! What is your name?</span></p>
+      </div>
+      <div id="userInput">
+        <input id="textInput" type="text" name="message" placeholder="Message">
+		<input type="hidden" id="counter" value="0"/>
+        <input id="buttonInput" type="button" value="Send">
+      </div>
+	  
+    </div>
+  </body>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <script>
+        function getBotResponse() {
+			var count = $("#counter").val();
+          var rawText = $("#textInput").val();
+          var userHtml = '<p class="userText'+count+'"><span>' + rawText + '</span></p>';
+          $("#textInput").val("");
+          $("#chatbox").append(userHtml);
+		  var a = {"message": "hi"}
+          document.getElementById('userInput').scrollIntoView({block: 'start', behavior: 'smooth'});
+		  $.ajax({
+			url: 'http://127.0.0.1:5000/chat',
+			contentType: "application/json",
+			type: "POST", /* or type:"GET" or type:"PUT" */
+			data: JSON.stringify({
+				"message" : rawText				
+			}),
+			success: function (result) {
+				//console.log(result);    
+				var obj = JSON.parse(result);
+				$(".userText"+count).append("<br>");
+				//alert(count);
+				$(".userText"+count).append(obj[count].question);
+				
+				$("#counter").val(++count);
+			},
+			error: function () {
+				console.log("error");
+			}
+		});
+          /*$.post("http://127.0.0.1:5000/chat", { message: rawText }).done(function(data) {
+            var botHtml = '<p class="botText"><span>' + data + '</span></p>';
+            $("#chatbox").append(botHtml);
+            document.getElementById('userInput').scrollIntoView({block: 'start', behavior: 'smooth'});
+          });*/
+        }
+        $("#textInput").keypress(function(e) {
+            if(e.which == 13) {
+                getBotResponse();
+            }
+        });
+        $("#buttonInput").click(function() {
+          getBotResponse();
+        })
+      </script>
+</html>
